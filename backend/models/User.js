@@ -26,18 +26,33 @@ const UserSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Wallet", // Reference to Wallet schema
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-// Pre-save hook to hash passwords
+// Pre-save hook to hash password and refreshToken (if refreshToken is not null)
 UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  if (!this.isModified("password") && !this.isModified("refreshToken")) {
+    return next();
+  }
+
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    if (this.isModified("password")) {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+
+    if (this.isModified("refreshToken") && this.refreshToken) {
+      const salt = await bcrypt.genSalt(10);
+      this.refreshToken = await bcrypt.hash(this.refreshToken, salt);
+    }
+
     next();
   } catch (err) {
     next(err);
@@ -46,6 +61,14 @@ UserSchema.pre("save", async function (next) {
 
 UserSchema.methods.isValidPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
+};
+
+UserSchema.methods.isValidRefreshToken = async function (refreshToken) {
+  if (this.refreshToken) {
+    return await bcrypt.compare(refreshToken, this.refreshToken);
+  } else {
+    return false;
+  }
 };
 
 module.exports = mongoose.model("User", UserSchema);

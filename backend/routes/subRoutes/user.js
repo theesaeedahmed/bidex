@@ -1,12 +1,13 @@
-// routes/user.js
+// api/user
 const express = require("express");
-const auth = require("../middlewares/auth");
+const auth = require("../../middlewares/auth");
 const {
   register,
   login,
   logout,
+  update,
   generateAccessTokenFromRefreshToken,
-} = require("../controllers/userController");
+} = require("../../controllers/userController");
 const router = express.Router();
 
 router.get("/generate-token", generateAccessTokenFromRefreshToken);
@@ -19,5 +20,7 @@ router.post("/login", login);
 
 // Logout a user (client-side, remove token)
 router.post("/logout", auth, logout);
+
+router.post("/update", auth, update);
 
 module.exports = router;
