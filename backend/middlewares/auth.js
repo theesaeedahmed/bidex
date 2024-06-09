@@ -7,23 +7,23 @@ function auth(req, res, next) {
   const auth_header = req.headers["authorization"];
   const access_token = auth_header && auth_header.split(" ")[1];
 
-  if (!access_token) {
-    const error = new CustomError("No access token provided.", 401);
-    return next(error);
-  }
+  try {
+    if (!access_token) {
+      throw new CustomError("No access token provided.", 401);
+    }
 
-  jwt.verify(access_token, access_token_secret, (err, session) => {
-    if (err) {
-      const error = new CustomError(err.message, 403);
-      return next(error);
+    const session = jwt.verify(access_token, access_token_secret);
+
+    if (!session || !session.id) {
+      throw new CustomError("Invalid access token", 401);
     }
+
     req.session = session;
-    if (!session.id) {
-      const error = new CustomError("Invalid Access Token", 401);
-      return next(error);
-    }
+
     next();
-  });
+  } catch (error) {
+    next(error);
+  }
 }
 
 module.exports = auth;

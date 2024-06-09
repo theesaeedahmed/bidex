@@ -1,18 +1,22 @@
 const User = require("../models/User");
-const CustomError = require("../utils/CustomError");
+const CustomError = require("./CustomError");
 
-const getAdminData = async (req, res, next) => {
-  const admin_id = req.session.id;
+const getAdminData = async (id, next) => {
   try {
-    const admin = await User.findById(admin_id);
+    const admin = await User.findById(id);
     if (!admin) {
       throw new CustomError("User not found.", 400);
     }
+
+    if (!admin.refreshToken) {
+      throw new CustomError("User is not logged in.", 401);
+    }
+
     if (!admin.isAdmin) {
       throw new CustomError("User is not an Admin.", 403);
     }
-    req.admin = admin;
-    next();
+
+    return admin;
   } catch (error) {
     next(error);
   }

@@ -34,9 +34,6 @@ const stockSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    potentialReturn: {
-      type: Number,
-    },
     status: {
       type: String,
       enum: ["pending", "won", "lost"],

@@ -10,17 +10,27 @@ const {
 } = require("../../controllers/userController");
 const router = express.Router();
 
+/**
+ * UNAUTHORIZED ROUTES
+ */
+
+// /api/user/generate-token
 router.get("/generate-token", generateAccessTokenFromRefreshToken);
 
-// Register a new user
+// /api/user/register
 router.post("/register", register);
 
-// Login a user
+// /api/user/login
 router.post("/login", login);
 
-// Logout a user (client-side, remove token)
-router.post("/logout", auth, logout);
+/**
+ * AUTHORIZED ROUTES
+ */
 
+// /auth/user/logout
+router.post("/logout", logout);
+
+// /auth/user/update
 router.post("/update", auth, update);
 
 module.exports = router;
