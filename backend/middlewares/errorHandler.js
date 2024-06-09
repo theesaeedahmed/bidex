@@ -31,9 +31,9 @@ const errorHandler = (err, req, res, next) => {
   console.error(err);
 
   if (process.env.DEPLOYMENT_MODE === "development") {
-    devErrors(res, err);
+    return devErrors(res, err);
   } else if (process.env.DEPLOYMENT_MODE === "production") {
-    prodErrors(res, err);
+    return prodErrors(res, err);
   }
 };
 

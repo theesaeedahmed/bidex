@@ -18,6 +18,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    accessTokens: [
+      {
+        type: String,
+        default: null,
+      },
+    ],
     refreshToken: {
       type: String,
       default: null,
@@ -63,12 +69,21 @@ UserSchema.methods.isValidPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-UserSchema.methods.isValidRefreshToken = async function (refreshToken) {
+UserSchema.methods.hasMatchingRefreshToken = async function (refreshToken) {
   if (this.refreshToken) {
     return await bcrypt.compare(refreshToken, this.refreshToken);
   } else {
     return false;
   }
+};
+
+UserSchema.methods.hasMatchingAccessToken = function (accessToken) {
+  const index = this.accessTokens.findIndex((token) => token === accessToken);
+
+  if (index === -1) {
+    return false;
+  }
+  return true;
 };
 
 module.exports = mongoose.model("User", UserSchema);
