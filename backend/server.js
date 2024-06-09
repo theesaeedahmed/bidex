@@ -4,9 +4,9 @@ require("./db/config");
 const express = require("express");
 const auth = require("./middlewares/auth");
 const errorHandler = require("./middlewares/errorHandler");
-const indexRouter = require("./routes/indexRouter");
-const apiRouter = require("./routes/apiRouter");
-const authRouter = require("./routes/authRouter");
+const indexRouter = require("./routers/indexRouter");
+const apiRouter = require("./routers/apiRouter");
+const authRouter = require("./routers/authRouter");
 
 const app = express();
 const port = process.env.PORT || 3000;

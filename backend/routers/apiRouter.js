@@ -1,7 +1,7 @@
 // path: /api
 const express = require("express");
-const userRouter = require("./subRoutes/user");
-const matchesRouter = require("./subRoutes/matches");
+const userRouter = require("./subRouters/user");
+const matchesRouter = require("./subRouters/matches");
 const router = express.Router();
 
 router.use("/user", userRouter);
