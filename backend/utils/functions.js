@@ -4,8 +4,8 @@ const CustomError = require("../utils/CustomError");
 const validateUserSession = async (
   id,
   token,
-  isRefreshToken = false,
-  checkIsUserAdmin = false
+  is_refresh_token = false,
+  check_is_user_admin = false
 ) => {
   try {
     const user = await User.findById(id);
@@ -32,7 +32,7 @@ const validateUserSession = async (
     }
 
     // verify the access token / refesh token from the ones in db
-    if (isRefreshToken) {
+    if (is_refresh_token) {
       const is_matching_refresh_token = await user.hasMatchingRefreshToken(
         token
       );
@@ -48,7 +48,7 @@ const validateUserSession = async (
       }
     }
 
-    if (checkIsUserAdmin && !user.isAdmin) {
+    if (check_is_user_admin && !user.isAdmin) {
       throw new CustomError("User is not an Admin.", 403);
     }
 

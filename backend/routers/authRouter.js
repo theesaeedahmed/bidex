@@ -1,11 +1,11 @@
 // path: /auth
 const express = require("express");
-const userRouter = require("./subRouters/userRouter");
-const matchesRouter = require("./subRouters/matchRouter");
-const walletRouter = require("./subRouters/walletRouter");
-const stocksRouter = require("./subRouters/stockRouter");
-const notificationsRouter = require("./subRouters/notificationRouter");
-const adminRouter = require("./subRouters/adminRouter");
+const userRouter = require("./authSubRouters/userRouter");
+const matchesRouter = require("./authSubRouters/matchRouter");
+const walletRouter = require("./authSubRouters/walletRouter");
+const stocksRouter = require("./authSubRouters/stockRouter");
+const notificationsRouter = require("./authSubRouters/notificationRouter");
+const adminRouter = require("./authSubRouters/adminRouter");
 const router = express.Router();
 
 // /auth/user

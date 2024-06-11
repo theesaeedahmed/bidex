@@ -160,8 +160,6 @@ const logout = asyncErrorHandler(async (req, res, next) => {
     const access_token = req.headers["authorization"].split(" ")[1];
     const user = await validateUserSession(req.session.id, access_token);
 
-    // const is_token_alive = user.hasMatchingAccessToken(token);
-
     user.refreshToken = null;
     const access_token_idx = user.accessTokens.findIndex(
       (token) => token === access_token
