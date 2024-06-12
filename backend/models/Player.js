@@ -6,10 +6,6 @@ const playerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    team: {
-      type: String,
-      required: true,
-    },
   },
   { timestamps: true }
 );

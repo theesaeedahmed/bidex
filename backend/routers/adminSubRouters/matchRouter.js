@@ -1,15 +1,19 @@
-// /admin/matches
+// /auth/admin/matches
 const express = require("express");
 const {
-  addNewMatch,
+  createMatch,
   deleteMatch,
+  updateMatchStatus,
 } = require("../../controllers/matchController");
 const router = express.Router();
 
-// add a new cricket match, admin access only
-router.post("/add", addNewMatch);
+// /auth/admin/matches/create
+router.post("/create", createMatch);
 
-// remove an old cricket match, admin access only
+// /auth/admin/matches/update/status
+router.put("/update/status", updateMatchStatus);
+
+// /auth/admin/matches/delete/:id
 router.delete("/delete/:id", deleteMatch);
 
 module.exports = router;

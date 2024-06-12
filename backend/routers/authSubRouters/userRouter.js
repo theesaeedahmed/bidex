@@ -10,7 +10,7 @@ const {
 const router = express.Router();
 
 // /api/user/generate-token
-router.get("/generate-token", generateAccessTokenFromRefreshToken);
+router.post("/generate-token", generateAccessTokenFromRefreshToken);
 
 // /auth/user/logout
 router.post("/logout", logout);

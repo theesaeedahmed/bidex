@@ -65,7 +65,7 @@ const login = asyncErrorHandler(async (req, res, next) => {
       throw new CustomError("User not found: Incorrect username", 404);
     }
 
-    if (user.accessTokens.length >= 2) {
+    if (user.accessTokens.length >= 1) {
       throw new CustomError(
         "Maximum login limit reached. Logout of other devices in order to login here.",
         400
@@ -117,26 +117,26 @@ const generateAccessTokenFromRefreshToken = asyncErrorHandler(
         true
       );
 
-      const access_token = req.headers["x-access-token"];
-
-      if (!access_token) {
-        throw new CustomError(
-          "Need to pass x-access-token header to refresh access token"
-        );
-      }
-
-      if (!user.hasMatchingAccessToken(access_token)) {
-        throw new CustomError("Access Token not present in DB.", 403);
-      }
-
       const refreshed_access_token = generateAccessToken(user._id);
 
-      const access_token_idx = user.accessTokens.findIndex(
-        (token) => token === access_token
-      );
-      user.accessTokens.splice(access_token_idx, 1);
+      // const access_token = req.headers["x-access-token"];
 
-      user.accessTokens.push(refreshed_access_token);
+      // if (!access_token) {
+      //   throw new CustomError(
+      //     "Need to pass x-access-token header to refresh access token"
+      //   );
+      // }
+
+      // if (!user.hasMatchingAccessToken(access_token)) {
+      //   throw new CustomError("Access Token not present in DB.", 403);
+      // }
+
+      // const access_token_idx = user.accessTokens.findIndex(
+      //   (token) => token === access_token
+      // );
+      // user.accessTokens.splice(access_token_idx, 1);
+
+      user.accessTokens[0] = refreshed_access_token;
 
       await user.save();
 

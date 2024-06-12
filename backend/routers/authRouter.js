@@ -6,6 +6,7 @@ const walletRouter = require("./authSubRouters/walletRouter");
 const stocksRouter = require("./authSubRouters/stockRouter");
 const notificationsRouter = require("./authSubRouters/notificationRouter");
 const adminRouter = require("./authSubRouters/adminRouter");
+const transactionRouter = require("./authSubRouters/transactionRouter");
 const router = express.Router();
 
 // /auth/user
@@ -22,6 +23,9 @@ router.use("/stocks", stocksRouter);
 
 // /auth/notifications
 router.use("/notifications", notificationsRouter);
+
+// /auth/transaction
+router.use("/admin", transactionRouter);
 
 // /auth/admin
 router.use("/admin", adminRouter);
