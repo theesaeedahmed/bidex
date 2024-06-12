@@ -128,13 +128,6 @@ const generateAccessTokenFromRefreshToken = asyncErrorHandler(
       if (!user.hasMatchingAccessToken(access_token)) {
         throw new CustomError("Access Token not present in DB.", 403);
       }
-      // const is_matching_refresh_token = await user.hasMatchingRefreshToken(
-      //   refresh_token
-      // );
-
-      // if (!is_matching_refresh_token) {
-      //   throw new CustomError("Couldn't authenticate refresh token.", 403);
-      // }
 
       const refreshed_access_token = generateAccessToken(user._id);
 
