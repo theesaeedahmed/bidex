@@ -1,6 +1,7 @@
 // server.js
 require("dotenv").config();
-require("./db/config");
+require("./config/mongodb");
+require("./config/cloudinary");
 const express = require("express");
 const auth = require("./middlewares/auth");
 const errorHandler = require("./middlewares/errorHandler");

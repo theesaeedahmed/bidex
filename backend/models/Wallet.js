@@ -1,5 +1,19 @@
 const mongoose = require("mongoose");
 
+const unsettledBalanceSchema = new mongoose.Schema(
+  {
+    deposit: {
+      type: Number,
+      default: 0,
+    },
+    withdrawal: {
+      type: Number,
+      default: 0,
+    },
+  },
+  { _id: false }
+);
+
 const walletSchema = new mongoose.Schema(
   {
     userId: {
@@ -10,6 +24,10 @@ const walletSchema = new mongoose.Schema(
     balance: {
       type: Number,
       default: 0,
+    },
+    unsettledBalance: {
+      type: unsettledBalanceSchema,
+      default: () => ({}), // Ensures that the default value is an object with default values for its fields
     },
     transactions: [
       {

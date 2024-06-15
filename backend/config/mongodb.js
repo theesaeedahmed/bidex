@@ -23,8 +23,8 @@ mongoose
       });
       db.collection("stocks").createIndex({
         matchId: 1,
-        playerId: 1,
         userId: 1,
+        playerId: 1,
       });
       db.collection("notifications").createIndex({ userId: 1, date: -1 });
     });

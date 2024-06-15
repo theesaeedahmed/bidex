@@ -1,3 +1,7 @@
 node_modules/
 .env
 package-lock.json
+public/temp/transactions/*.jpg
+public/temp/transactions/*.jpeg
+public/temp/transactions/*.png
+public/temp/transactions/*.gif

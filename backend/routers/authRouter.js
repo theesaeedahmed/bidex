@@ -24,8 +24,8 @@ router.use("/stocks", stocksRouter);
 // /auth/notifications
 router.use("/notifications", notificationsRouter);
 
-// /auth/transaction
-router.use("/admin", transactionRouter);
+// /auth/transactions
+router.use("/transactions", transactionRouter);
 
 // /auth/admin
 router.use("/admin", adminRouter);

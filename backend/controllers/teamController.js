@@ -119,6 +119,10 @@ const addPlayerToTeam = asyncErrorHandler(async (req, res, next) => {
       throw new CustomError("Player not found", 404);
     }
 
+    if (player.teamId) {
+      throw new CustomError("Player is already in a team.", 400);
+    }
+
     team.players.push(player_id);
     await team.save();
 
@@ -141,24 +145,36 @@ const removePlayerFromTeam = asyncErrorHandler(async (req, res, next) => {
       true
     );
 
-    const { teamId, playerId } = req.body;
+    const { teamId: team_id, playerId: player_id } = req.body;
 
-    if (!teamId || !playerId) {
+    if (!team_id || !player_id) {
       throw new CustomError("teamId and playerId are required.", 400);
     }
 
-    const team = await Team.findById(teamId);
+    const team = await Team.findById(team_id);
     if (!team) {
       throw new CustomError("Team not found", 404);
     }
 
-    const index = team.players.indexOf(playerId);
+    const player = await Player.findById(player_id);
+    if (!player) {
+      throw new CustomError("Player not found", 404);
+    }
+
+    if (!player.teamId || player.teamId.toString() !== team._id.toString()) {
+      throw new CustomError("Player is not a part of this team.", 400);
+    }
+
+    const index = team.players.indexOf(player_id);
     if (index === -1) {
       throw new CustomError("Player not found in the team", 404);
     }
 
     team.players.splice(index, 1);
+    player.teamId = null;
+
     await team.save();
+    await player.save();
 
     res.status(200).json({
       success: true,

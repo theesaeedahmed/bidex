@@ -16,6 +16,6 @@ router.use("/player", playerRouter);
 router.use("/team", teamRouter);
 
 // /auth/admin/transactions
-router.use("/transaction", transactionRouter);
+router.use("/transactions", transactionRouter);
 
 module.exports = router;

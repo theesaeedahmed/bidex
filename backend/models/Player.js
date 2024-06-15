@@ -6,6 +6,10 @@ const playerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    teamId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Team",
+    },
   },
   { timestamps: true }
 );

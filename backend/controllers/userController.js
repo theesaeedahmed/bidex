@@ -3,6 +3,7 @@ const User = require("../models/User");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 const CustomError = require("../utils/CustomError");
 const { validateUserSession } = require("../utils/functions");
+const Wallet = require("../models/Wallet");
 
 const access_token_secret = process.env.ACCESS_TOKEN_SECRET;
 const refresh_token_secret = process.env.REFRESH_TOKEN_SECRET;
@@ -30,9 +31,13 @@ const register = asyncErrorHandler(async (req, res, next) => {
     }
 
     const user = new User({ username, email, password });
+    const wallet = new Wallet({ userId: user._id });
+
+    user.walletId = wallet._id;
 
     try {
       await user.save();
+      await wallet.save();
     } catch (error) {
       throw new CustomError(
         `Error saving (registering) user at DB: \n ${error.message}`,

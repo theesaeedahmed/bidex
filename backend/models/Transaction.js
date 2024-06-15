@@ -13,12 +13,8 @@ const transactionSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["deposit", "withdrawal", "buy_stock", "sell_stock"],
+      enum: ["deposit", "withdrawal", "buy_stock", "won_bet"],
       required: true,
-    },
-    date: {
-      type: Date,
-      default: Date.now,
     },
     status: {
       type: String,
@@ -27,11 +23,9 @@ const transactionSchema = new mongoose.Schema(
     },
     utr: {
       type: String,
-      required: true,
     },
     screenshot: {
       type: String,
-      required: true,
     },
     details: {
       type: String,

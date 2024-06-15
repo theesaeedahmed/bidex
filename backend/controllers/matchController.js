@@ -1,4 +1,6 @@
 const Match = require("../models/Match");
+const Stock = require("../models/Stock");
+const Wallet = require("../models/Wallet");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 const CustomError = require("../utils/CustomError");
 const { validateUserSession } = require("../utils/functions");
@@ -127,7 +129,23 @@ const updateMatchStatus = asyncErrorHandler(async (req, res, next) => {
     }
 
     match.status = status;
-    await match.save();
+
+    if (status !== "completed") {
+      await match.save();
+    } else {
+      const stocks = await Stock.find({ matchId: match_id }).populate({
+        path: "userId",
+        populate: {
+          path: "walletId",
+        },
+      });
+
+      if (stocks && Array.isArray(stocks) && stocks.length > 0) {
+        stocks.forEach(async (stock) => {
+          const wallet = await Wallet.findById(stock.userId.walletId);
+        });
+      }
+    }
 
     res
       .status(200)

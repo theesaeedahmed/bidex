@@ -3,9 +3,9 @@
 const devErrors = (res, err) => {
   res.status(err.statusCode).json({
     message: err.message,
-    stackTrace: err.stack,
-    error: err,
     status: err.statusCode,
+    error: err,
+    stackTrace: err.stack,
   });
 };
 

@@ -4,7 +4,7 @@ const {
   createPlayer,
   deletePlayer,
   updatePlayer,
-  changeTeam,
+  updateTeam,
 } = require("../../controllers/playerController");
 const router = express.Router();
 
@@ -13,6 +13,9 @@ router.post("/create", createPlayer);
 
 // /auth/admin/player/update
 router.put("/update", updatePlayer);
+
+// /auth/admin/player/update/team
+router.put("/update", updateTeam);
 
 // /auth/admin/player/delete/:id
 router.delete("/delete/:id", deletePlayer);
