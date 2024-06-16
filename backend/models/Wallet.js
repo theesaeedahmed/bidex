@@ -10,6 +10,10 @@ const unsettledBalanceSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    winnings: {
+      type: Number,
+      default: 0,
+    },
   },
   { _id: false }
 );

@@ -1,9 +1,54 @@
 const Match = require("../models/Match");
 const Stock = require("../models/Stock");
+const Transaction = require("../models/Transaction");
 const Wallet = require("../models/Wallet");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 const CustomError = require("../utils/CustomError");
 const { validateUserSession } = require("../utils/functions");
+
+const didWin = (stock, match) => {
+  const player_id = stock.playerId;
+  const player_points = match.players.find(
+    (match_player) => match_player.id.toString() === player_id.toString()
+  );
+
+  const type = stock.type;
+
+  const check = player_points.points > player_points.biddingPoints;
+  if (type === "yes") {
+    return { did_win: check, bid_multiplier: check ? 2 : 0 };
+  } else if (type === "no") {
+    return { did_win: !check, bid_multiplier: !check ? 2 : 0 };
+  } else if (type === "multibagger") {
+    let max_points = -999999;
+    let max_points_players = [];
+
+    match.players.forEach((match_player) => {
+      if (match_player.points > max_points) {
+        max_points = match_player.points;
+        max_points_players = [match_player.id];
+      } else if (match_player.points === max_points) {
+        max_points_players.push(match_player.id);
+      }
+    });
+
+    if (max_points_players.length === 0) {
+      throw new CustomError("No players have max point.", 400);
+    }
+
+    const bidded_player = max_points_players.find(
+      (max_points_player) =>
+        max_points_player.id.toString() === player_id.toString()
+    );
+
+    return {
+      did_win: bidded_player ? true : false,
+      bid_multiplier: bidded_player ? 5 : 0,
+    };
+  } else {
+    return { did_win: false, bid_multiplier: 0 };
+  }
+};
 
 /**
  * UNAUTHORIZED ROUTES
@@ -130,22 +175,56 @@ const updateMatchStatus = asyncErrorHandler(async (req, res, next) => {
 
     match.status = status;
 
-    if (status !== "completed") {
-      await match.save();
-    } else {
+    if (status === "completed") {
       const stocks = await Stock.find({ matchId: match_id }).populate({
         path: "userId",
-        populate: {
-          path: "walletId",
-        },
+        select: "_id walletId",
       });
 
       if (stocks && Array.isArray(stocks) && stocks.length > 0) {
-        stocks.forEach(async (stock) => {
-          const wallet = await Wallet.findById(stock.userId.walletId);
-        });
+        const walletIds = stocks.map((stock) => stock.userId.walletId);
+
+        // Fetch all wallets in a single query
+        const wallets = await Wallet.find({ _id: { $in: walletIds } });
+
+        // Create a map of wallet IDs to wallet documents
+        const walletMap = wallets.reduce((map, wallet) => {
+          map[wallet._id.toString()] = wallet;
+          return map;
+        }, {});
+
+        // Update wallets and create transactions within stocks.map
+        await Promise.all(
+          stocks.map(async (stock) => {
+            const wallet = walletMap[stock.userId.walletId.toString()];
+            const { did_win, bid_multiplier } = didWin(stock, match);
+
+            if (did_win) {
+              stock.status = "won";
+
+              const transaction_data = {
+                userId: wallet.userId,
+                amount: stock.totalInvestment * bid_multiplier,
+                type: "won_bet",
+              };
+
+              wallet.unsettledBalance.winnings =
+                (wallet.unsettledBalance.winnings || 0) +
+                stock.totalInvestment * bid_multiplier;
+
+              await Transaction.create(transaction_data);
+              await wallet.save();
+            } else {
+              stock.status = "lost";
+            }
+
+            await stock.save();
+          })
+        );
       }
     }
+
+    await match.save();
 
     res
       .status(200)
