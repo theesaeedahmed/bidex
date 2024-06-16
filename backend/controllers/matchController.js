@@ -228,7 +228,66 @@ const updateMatchStatus = asyncErrorHandler(async (req, res, next) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Match status updated successfully" });
+      .json({ success: true, message: "Match status updated successfully." });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// /auth/admin/matches/update/player_points
+const updatePlayerPoints = asyncErrorHandler(async (req, res, next) => {
+  try {
+    const access_token = req.headers["authorization"].split(" ")[1];
+    const admin = await validateUserSession(
+      req.session.id,
+      access_token,
+      false,
+      true
+    );
+
+    const {
+      matchId: match_id,
+      playerId: player_id,
+      newPoints: points,
+    } = req.body;
+
+    if (!match_id || !player_id || !points) {
+      throw new CustomError(
+        "matchId, playerId, points are required to update player points in a live match.",
+        400
+      );
+    }
+
+    const match = await Match.findById(match_id);
+
+    if (!match) {
+      throw new CustomError("Match not found.", 404);
+    }
+
+    if (match.status !== "live") {
+      throw new CustomError("Match is not live", 400);
+    }
+
+    const player_idx = match.players.findIndex(
+      (match_player) => match_player.id.toString() === player_id.toString()
+    );
+
+    if (player_idx === -1) {
+      throw new CustomError("Player not found in the match.", 400);
+    }
+
+    if (points < match.players[player_idx].points) {
+      throw new CustomError(
+        "New points cannot be lower than current points.",
+        400
+      );
+    }
+
+    match.players[player_idx].points = points;
+
+    await match.save();
+
+    res.json({ message: "Player points updated successfully." });
   } catch (error) {
     next(error);
   }
@@ -336,4 +395,5 @@ module.exports = {
   createMatch,
   deleteMatch,
   updateMatchStatus,
+  updatePlayerPoints,
 };
