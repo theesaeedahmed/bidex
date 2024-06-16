@@ -405,10 +405,38 @@ const rejectTransaction = asyncErrorHandler(async (req, res, next) => {
   }
 });
 
+// /auth/admin/transactions/pending
+const fetchPendingTransactions = asyncErrorHandler(async (req, res, next) => {
+  try {
+    const access_token = req.headers["authorization"].split(" ")[1];
+    const admin = await validateUserSession(
+      req.session.id,
+      access_token,
+      false,
+      true
+    );
+
+    const { page = 1, limit = 10 } = req.body();
+    const skip = (page - 1) * limit;
+
+    const pending_transactions = await Transaction.find({ status: "pending" })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    res.json({
+      message: "Pending transactions fetched successfully.",
+      pendingTransactions: pending_transactions,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = {
   deposit,
   withdraw,
   buyStock,
   acceptTransaction,
   rejectTransaction,
+  fetchPendingTransactions,
 };
