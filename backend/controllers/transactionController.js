@@ -56,7 +56,6 @@ const deposit = asyncErrorHandler(async (req, res, next) => {
 
     const transaction = await Transaction.create(transaction_data);
     if (!transaction) {
-      fs.unlinkSync(local_file_path);
       throw new CustomError("Error while creating transaction.", 500);
     }
 
@@ -290,10 +289,42 @@ const acceptTransaction = asyncErrorHandler(async (req, res, next) => {
         wallet.unsettledBalance.deposit - transaction.amount;
 
       transaction.status = "completed";
-    } else if (transaction.type === "withdrawal") {
-      wallet.unsettledBalance.withdrawal =
-        wallet.unsettledBalance.withdrawal - transaction.amount;
+    } else if (
+      transaction.type === "withdrawal" ||
+      transaction.type === "won_bet"
+    ) {
+      if (transaction.type === "withdrawal") {
+        wallet.unsettledBalance.withdrawal =
+          wallet.unsettledBalance.withdrawal - transaction.amount;
+      } else {
+        wallet.unsettledBalance.winnings =
+          wallet.unsettledBalance.winnings - transaction.amount;
+        wallet.balance = wallet.balance + transaction.amount;
+      }
 
+      if (!utr) {
+        throw new CustomError(
+          "UTR number is required to approve withdrawal and won bet transactions",
+          400
+        );
+      }
+
+      if (!req.file) {
+        throw new CustomError("Transaction image not found.", 500);
+      }
+
+      const local_file_path = `${req.file.destination}/${req.file.filename}`;
+
+      const response = await uploadOnCloudinary(
+        "transaction",
+        local_file_path,
+        req.file.filename
+      );
+      const transaction_screenshot_url = response.secure_url;
+      fs.unlinkSync(local_file_path);
+
+      transaction.utr = utr;
+      transaction.screenshot = transaction_screenshot_url;
       transaction.status = "completed";
     }
 
@@ -356,6 +387,11 @@ const rejectTransaction = asyncErrorHandler(async (req, res, next) => {
       wallet.unsettledBalance.withdrawal =
         wallet.unsettledBalance.withdrawal - transaction.amount;
       wallet.balance = wallet.balance + transaction.amount;
+
+      transaction.status = "failed";
+    } else if (transaction.type === "won_bet") {
+      wallet.unsettledBalance.winnings =
+        wallet.unsettledBalance.winnings - transaction.amount;
 
       transaction.status = "failed";
     }
