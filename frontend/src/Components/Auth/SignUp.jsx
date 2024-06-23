@@ -90,6 +90,7 @@ const SignUp = () => {
   };
 
   useEffect(() => {
+    console.log("up");
     resetFormData();
   }, []);
 
@@ -97,7 +98,7 @@ const SignUp = () => {
     <Box padding={2}>
       <Heading>Register</Heading>
       <VStack marginY={8} marginTop={3} gap={3}>
-        <FormControl id="login-email" isRequired isInvalid={errors.email}>
+        <FormControl id="register-email" isRequired isInvalid={errors.email}>
           <FormLabel>Email</FormLabel>
           <InputGroup size={"md"}>
             <Input
@@ -109,7 +110,7 @@ const SignUp = () => {
           </InputGroup>
           {errors.email && <FormErrorMessage>{errors.email}</FormErrorMessage>}
         </FormControl>
-        <FormControl id="login-username" isRequired isInvalid={errors.email}>
+        <FormControl id="register-username" isRequired isInvalid={errors.email}>
           <FormLabel>Username</FormLabel>
           <InputGroup size={"md"}>
             <Input
@@ -123,7 +124,11 @@ const SignUp = () => {
             <FormErrorMessage>{errors.username}</FormErrorMessage>
           )}
         </FormControl>
-        <FormControl id="login-password" isRequired isInvalid={errors.password}>
+        <FormControl
+          id="register-password"
+          isRequired
+          isInvalid={errors.password}
+        >
           <FormLabel>Password</FormLabel>
           <InputGroup size={"md"}>
             <Input
@@ -148,7 +153,11 @@ const SignUp = () => {
             <FormErrorMessage>{errors.password}</FormErrorMessage>
           )}
         </FormControl>
-        <FormControl id="login-password" isRequired isInvalid={errors.password}>
+        <FormControl
+          id="register-confirm-password"
+          isRequired
+          isInvalid={errors.password}
+        >
           <FormLabel>Confirm Password</FormLabel>
           <InputGroup size={"md"}>
             <Input
