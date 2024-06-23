@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import baseUrl from "../url";
 
 const useAccessToken = (refreshToken) => {
   const [accessToken, setAccessToken] = useState(null);
@@ -11,6 +12,7 @@ const useAccessToken = (refreshToken) => {
   useEffect(() => {
     if (!refreshToken) {
       setAccessToken(null);
+      setLoading(false);
       expirationTime.current = 0;
 
       return;
@@ -25,8 +27,9 @@ const useAccessToken = (refreshToken) => {
           },
         };
 
-        const response = await axios.get(
+        const response = await axios.post(
           `${baseUrl}/auth/user/generate-token`,
+          {},
           config
         );
 
@@ -37,6 +40,7 @@ const useAccessToken = (refreshToken) => {
         }
 
         setAccessToken(currentAccessToken);
+
         const currentTime = Date.now();
         expirationTime.current = currentTime + validityDuration.current;
 
@@ -82,7 +86,7 @@ const useAccessToken = (refreshToken) => {
     return () => clearInterval(interval);
   }, [refreshToken]);
 
-  return { accessToken, loading, error };
+  return { accessToken, loading, error, setError };
 };
 
 export default useAccessToken;

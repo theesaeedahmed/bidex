@@ -5,7 +5,6 @@ const matchRouter = require("../adminSubRouters/matchRouter");
 const playerRouter = require("../adminSubRouters/playerRouter");
 const teamRouter = require("../adminSubRouters/teamRouter");
 const transactionRouter = require("../adminSubRouters/transactionRouter");
-
 // /auth/admin/matches
 router.use("/matches", matchRouter);
 

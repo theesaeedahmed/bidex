@@ -4,7 +4,7 @@ import React from "react";
 const Loading = () => {
   return (
     <Box
-      height={"100%"}
+      height={"100vh"}
       width={"100%"}
       display={"flex"}
       justifyContent={"center"}
@@ -15,8 +15,11 @@ const Loading = () => {
         height={"100%"}
         width={"100%"}
         display={"flex"}
+        flexDir={"column"}
         justifyContent={"center"}
         alignItems={"center"}
+        gap={3}
+        color={"blue"}
       >
         <Spinner size={"xl"}></Spinner>
         <Text>Loading your data...</Text>

@@ -9,7 +9,7 @@ function auth(req, res, next) {
 
   try {
     if (!token) {
-      throw new CustomError("No access token provided.", 401);
+      throw new CustomError("No token provided.", 401);
     }
 
     let secret = access_token_secret;

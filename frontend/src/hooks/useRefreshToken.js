@@ -8,6 +8,11 @@ const useRefreshToken = () => {
 
   const location = useLocation();
 
+  const revokeRefreshToken = () => {
+    setRefreshToken(null);
+    localStorage.removeItem("refresh_token");
+  };
+
   const storeRefreshToken = (token) => {
     localStorage.setItem("refresh_token", token);
     setRefreshToken(token);
@@ -41,7 +46,14 @@ const useRefreshToken = () => {
     getRefreshToken();
   }, []);
 
-  return { refreshToken, storeRefreshToken, loading, error };
+  return {
+    refreshToken,
+    storeRefreshToken,
+    revokeRefreshToken,
+    loading,
+    error,
+    setError,
+  };
 };
 
 export default useRefreshToken;

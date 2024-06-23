@@ -9,7 +9,7 @@ const {
 } = require("../../controllers/userController");
 const router = express.Router();
 
-// /api/user/generate-token
+// /auth/user/generate-token
 router.post("/generate-token", generateAccessTokenFromRefreshToken);
 
 // /auth/user/logout

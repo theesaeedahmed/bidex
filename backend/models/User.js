@@ -44,7 +44,7 @@ const UserSchema = new mongoose.Schema(
 
 // Pre-save hook to hash password and refreshToken (if refreshToken is not null)
 UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password") && !this.isModified("refreshToken")) {
+  if (!this.isModified("password")) {
     return next();
   }
 
@@ -52,11 +52,6 @@ UserSchema.pre("save", async function (next) {
     if (this.isModified("password") && this.password) {
       const salt = await bcrypt.genSalt(10);
       this.password = await bcrypt.hash(this.password, salt);
-    }
-
-    if (this.isModified("refreshToken") && this.refreshToken) {
-      const salt = await bcrypt.genSalt(10);
-      this.refreshToken = await bcrypt.hash(this.refreshToken, salt);
     }
 
     next();
@@ -71,7 +66,7 @@ UserSchema.methods.isValidPassword = async function (password) {
 
 UserSchema.methods.hasMatchingRefreshToken = async function (refreshToken) {
   if (this.refreshToken) {
-    return await bcrypt.compare(refreshToken, this.refreshToken);
+    return this.refreshToken === refreshToken;
   } else {
     return false;
   }

@@ -45,7 +45,9 @@ const register = asyncErrorHandler(async (req, res, next) => {
       );
     }
 
-    res.status(201).json({ message: "User registered successfully" });
+    res
+      .status(201)
+      .json({ message: "User registered successfully", success: true });
   } catch (error) {
     next(error);
   }
@@ -54,6 +56,8 @@ const register = asyncErrorHandler(async (req, res, next) => {
 // /api/user/login
 const login = asyncErrorHandler(async (req, res, next) => {
   const { username, password, email } = req.body;
+  const verify_admin = req.headers["verify-admin"] === "true";
+
   try {
     if ((!username && !email) || !password) {
       throw new CustomError(
@@ -77,6 +81,10 @@ const login = asyncErrorHandler(async (req, res, next) => {
       );
     }
 
+    if (verify_admin && !user.isAdmin) {
+      throw new CustomError("Not an Admin. Access Denied.", 403);
+    }
+
     const is_matching_password = await user.isValidPassword(password);
     if (!is_matching_password) {
       throw new CustomError("Incorrect password", 400);
@@ -97,10 +105,12 @@ const login = asyncErrorHandler(async (req, res, next) => {
       );
     }
 
+    const user_profile = { username: user.username, email: user.email };
+
     res.status(200).json({
       accessToken: access_token,
       refreshToken: refresh_token,
-      user: { id: user._id, username: user.username, email: user.email },
+      user: user_profile,
     });
   } catch (error) {
     next(error);
@@ -122,24 +132,11 @@ const generateAccessTokenFromRefreshToken = asyncErrorHandler(
         true
       );
 
+      if (user.refreshToken !== refresh_token) {
+        throw new CustomError("Refresh tokens do not match.", 403);
+      }
+
       const refreshed_access_token = generateAccessToken(user._id);
-
-      // const access_token = req.headers["x-access-token"];
-
-      // if (!access_token) {
-      //   throw new CustomError(
-      //     "Need to pass x-access-token header to refresh access token"
-      //   );
-      // }
-
-      // if (!user.hasMatchingAccessToken(access_token)) {
-      //   throw new CustomError("Access Token not present in DB.", 403);
-      // }
-
-      // const access_token_idx = user.accessTokens.findIndex(
-      //   (token) => token === access_token
-      // );
-      // user.accessTokens.splice(access_token_idx, 1);
 
       user.accessTokens[0] = refreshed_access_token;
 
@@ -178,10 +175,9 @@ const userProfile = asyncErrorHandler(async (req, res, next) => {
     const access_token = req.headers["authorization"].split(" ")[1];
     const user = await validateUserSession(req.session.id, access_token);
 
-    const { password, refreshToken, accessTokens, __v, ...safe_user } =
-      user._doc;
-
-    res.status(200).json({ user: safe_user });
+    res
+      .status(200)
+      .json({ user: { username: user.username, email: user.email } });
   } catch (error) {
     next(error);
   }
@@ -198,30 +194,21 @@ const update = asyncErrorHandler(async (req, res, next) => {
     if (email) user.email = email;
     if (password) user.password = password;
 
-    if (password) {
-      const refresh_token = generateRefreshToken(user._id);
-      const access_token = generateAccessToken(user._id);
+    const new_refresh_token = generateRefreshToken(user._id);
+    const new_access_token = generateAccessToken(user._id);
 
-      user.refreshToken = refresh_token;
-      user.accessTokens = [access_token];
-    }
+    user.refreshToken = new_refresh_token;
+    user.accessTokens = [new_access_token];
 
     const updated_user = await user.save();
 
-    const {
-      password: user_password,
-      refreshToken: refresh_token,
-      accessTokens: access_tokens,
-      __v,
-      ...safe_user
-    } = updated_user._doc;
+    const user_profile = { username: user.username, email: user.email };
 
-    if (password) {
-      safe_user.refreshToken = refresh_token;
-      safe_user.accessToken = access_tokens[0];
-    }
-
-    res.status(200).json({ user: safe_user });
+    res.status(200).json({
+      accessToken: new_access_token,
+      refreshToken: new_refresh_token,
+      user: user_profile,
+    });
   } catch (error) {
     next(error);
   }

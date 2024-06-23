@@ -2,24 +2,28 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import baseUrl from "../url";
 
-const useUser = (accessToken) => {
+const useUser = (accessToken, storeRefreshToken) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadFlag, setReloadFlag] = useState(0);
   const preventExecution = useRef(false);
 
-  const registerUser = async (userData) => {
+  const registerUser = async ({ email, username, password }) => {
     try {
       const response = await axios.post(
         `${baseUrl}/api/user/register`,
-        userData,
+        { email, username, password },
         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
+
+      if (response.data.success === true) {
+        await loginUser({ email, username, password });
+      }
       return response.data;
     } catch (error) {
       throw error;
@@ -37,6 +41,13 @@ const useUser = (accessToken) => {
           },
         }
       );
+
+      const refreshToken = response.data.refreshToken;
+      const userProfileInfo = response.data.user;
+
+      storeRefreshToken(refreshToken);
+      setUser(userProfileInfo);
+
       return response.data;
     } catch (error) {
       throw error;
@@ -57,12 +68,13 @@ const useUser = (accessToken) => {
   };
 
   useEffect(() => {
-    if (preventExecution.current) {
+    if (!accessToken) {
+      setUser(null);
+      setLoading(false);
       return;
     }
 
-    if (!accessToken) {
-      setUser(null);
+    if (preventExecution.current) {
       return;
     }
 
@@ -75,7 +87,10 @@ const useUser = (accessToken) => {
           },
         };
 
-        const response = await axios.get(`${baseUrl}/profile`, config);
+        const response = await axios.get(
+          `${baseUrl}/auth/user/profile`,
+          config
+        );
 
         const userData = response?.data?.user;
 
@@ -97,12 +112,10 @@ const useUser = (accessToken) => {
 
   return {
     user,
-    setUser,
     loading,
     error,
+    setError,
     reload,
-    preventUserFetch,
-    allowUserFetch,
     registerUser,
     loginUser,
   };
