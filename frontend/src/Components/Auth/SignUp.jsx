@@ -90,7 +90,6 @@ const SignUp = () => {
   };
 
   useEffect(() => {
-    console.log("up");
     resetFormData();
   }, []);
 

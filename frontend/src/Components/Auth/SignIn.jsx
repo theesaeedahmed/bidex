@@ -80,7 +80,6 @@ const SignIn = () => {
   };
 
   useEffect(() => {
-    console.log("in");
     resetFormData();
   }, []);
 
