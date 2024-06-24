@@ -18,13 +18,8 @@ const useWallet = () => {
   };
 
   const depositMoney = async (formData) => {
+    console.log(formData);
     try {
-      if (!formData.amount || !formData.transactions || !formData.utr) {
-        throw new Error(
-          "Need amount, transaction screenshot and utr number to make deposit request."
-        );
-      }
-
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -57,7 +52,7 @@ const useWallet = () => {
 
   const withdrawMoney = async (amount) => {
     try {
-      if (amount < wallet.balance) {
+      if (amount > wallet.balance) {
         throw new Error("Insufficient balance.");
       }
 

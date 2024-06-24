@@ -23,6 +23,7 @@ const transactionSchema = new mongoose.Schema(
     },
     utr: {
       type: String,
+      unique: true,
     },
     screenshot: {
       type: String,

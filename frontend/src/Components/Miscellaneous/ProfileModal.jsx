@@ -13,14 +13,16 @@ import {
 
 import React from "react";
 import { AuthState } from "../../Context/AuthProvider";
+import { LayoutState } from "../../Context/LayoutProvider";
 
 const ProfileModal = ({ isOpen, onClose }) => {
   const { user } = AuthState();
+  const { screenWidth } = LayoutState();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent maxWidth={"80%"}>
+      <ModalContent maxWidth={screenWidth < 420 ? "80%" : "400px"}>
         <ModalHeader>Profile Information</ModalHeader>
         <ModalBody>
           <Box display={"flex"} gap={4}>

@@ -60,7 +60,7 @@ const deposit = asyncErrorHandler(async (req, res, next) => {
     }
 
     user_wallet.unsettledBalance.deposit =
-      user_wallet.unsettledBalance.deposit + amount;
+      Number(user_wallet.unsettledBalance.deposit) + Number(amount);
     user_wallet.transactions.push(transaction._id);
     const updated_wallet = await user_wallet.save();
 
@@ -110,8 +110,8 @@ const withdraw = asyncErrorHandler(async (req, res, next) => {
 
     user_wallet.transactions.push(transaction._id);
     user_wallet.unsettledBalance.withdrawal =
-      user_wallet.unsettledBalance.withdrawal + amount;
-    user_wallet.balance = user_wallet.balance - amount;
+      Number(user_wallet.unsettledBalance.withdrawal) + Number(amount);
+    user_wallet.balance = Number(user_wallet.balance) - Number(amount);
     const updated_wallet = await user_wallet.save();
 
     res.json({
@@ -193,7 +193,7 @@ const buyStock = asyncErrorHandler(async (req, res, next) => {
 
     const balance = user_wallet.balance;
 
-    user_wallet.balance = balance - total_investment;
+    user_wallet.balance = Number(balance) - Number(total_investment);
 
     const transaction = await Transaction.create(new_transaction);
 
@@ -213,7 +213,7 @@ const buyStock = asyncErrorHandler(async (req, res, next) => {
 
     const updated_wallet = await user_wallet.save();
 
-    if (updated_wallet.balance !== balance - total_investment) {
+    if (updated_wallet.balance !== Number(balance) - Number(total_investment)) {
       await Transaction.findByIdAndDelete(transaction._id);
 
       await Stock.findByIdAndDelete(stock._id);
@@ -283,9 +283,9 @@ const acceptTransaction = asyncErrorHandler(async (req, res, next) => {
     }
 
     if (transaction.type === "deposit") {
-      wallet.balance = wallet.balance + transaction.amount;
+      wallet.balance = Number(wallet.balance) + Number(transaction.amount);
       wallet.unsettledBalance.deposit =
-        wallet.unsettledBalance.deposit - transaction.amount;
+        Number(wallet.unsettledBalance.deposit) - Number(transaction.amount);
 
       transaction.status = "completed";
     } else if (
@@ -294,11 +294,12 @@ const acceptTransaction = asyncErrorHandler(async (req, res, next) => {
     ) {
       if (transaction.type === "withdrawal") {
         wallet.unsettledBalance.withdrawal =
-          wallet.unsettledBalance.withdrawal - transaction.amount;
+          Number(wallet.unsettledBalance.withdrawal) -
+          Number(transaction.amount);
       } else {
         wallet.unsettledBalance.winnings =
-          wallet.unsettledBalance.winnings - transaction.amount;
-        wallet.balance = wallet.balance + transaction.amount;
+          Number(wallet.unsettledBalance.winnings) - Number(transaction.amount);
+        wallet.balance = Number(wallet.balance) + Number(transaction.amount);
       }
 
       if (!utr) {
@@ -379,18 +380,18 @@ const rejectTransaction = asyncErrorHandler(async (req, res, next) => {
 
     if (transaction.type === "deposit") {
       wallet.unsettledBalance.deposit =
-        wallet.unsettledBalance.deposit - transaction.amount;
+        Number(wallet.unsettledBalance.deposit) - Number(transaction.amount);
 
       transaction.status = "failed";
     } else if (transaction.type === "withdrawal") {
       wallet.unsettledBalance.withdrawal =
-        wallet.unsettledBalance.withdrawal - transaction.amount;
-      wallet.balance = wallet.balance + transaction.amount;
+        Number(wallet.unsettledBalance.withdrawal) - Number(transaction.amount);
+      wallet.balance = Number(wallet.balance) + Number(transaction.amount);
 
       transaction.status = "failed";
     } else if (transaction.type === "won_bet") {
       wallet.unsettledBalance.winnings =
-        wallet.unsettledBalance.winnings - transaction.amount;
+        Number(wallet.unsettledBalance.winnings) - Number(transaction.amount);
 
       transaction.status = "failed";
     }

@@ -6,7 +6,6 @@ import Header from "../Components/Miscellaneous/Header";
 import { useLocation, useNavigate } from "react-router-dom";
 import AllTransactions from "../Components/Wallet/AllTransactions";
 import Deposit from "../Components/Wallet/Deposit";
-import Withdrawal from "../Components/Wallet/Withdrawal";
 
 const TransactionPage = () => {
   const [renderedComponent, setRenderedComponent] = useState();
@@ -14,14 +13,14 @@ const TransactionPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const components = [<AllTransactions />, <Deposit />, <Withdrawal />];
+  const components = [<AllTransactions />, <Deposit />];
 
   const onBackToHomePageClicked = (e) => {
     navigate("/home");
   };
 
   useEffect(() => {
-    if (location.state) {
+    if (location.pathname === "/transactions" && location.state) {
       setRenderedComponent(location.state);
     } else {
       setRenderedComponent(0);
@@ -31,12 +30,18 @@ const TransactionPage = () => {
   return !user ? (
     <Loading />
   ) : (
-    <Box display={"flex"} flexDir={"column"} height={"100%"} width={"100%"}>
+    <Box
+      display={"flex"}
+      flexDir={"column"}
+      width={"100%"}
+      overflow={"scroll"}
+      height={"100vh"}
+    >
       <Header />
       <Button borderRadius={0} onClick={onBackToHomePageClicked}>
         Back to Home Page
       </Button>
-      <Box bgColor={"white"} flex={1}>
+      <Box bgColor={"white"} flex={1} overflow={"scroll"}>
         {components[renderedComponent]}
       </Box>
     </Box>

@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { AuthState } from "../../Context/AuthProvider";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ProfileModal from "./ProfileModal";
 
 const UserAvatar = () => {
@@ -25,7 +25,6 @@ const UserAvatar = () => {
   } = useDisclosure();
   const { logoutUser } = AuthState();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const onProfileClicked = (e) => {
     onProfileModalOpen();

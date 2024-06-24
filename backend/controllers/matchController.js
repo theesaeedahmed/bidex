@@ -209,8 +209,8 @@ const updateMatchStatus = asyncErrorHandler(async (req, res, next) => {
               };
 
               wallet.unsettledBalance.winnings =
-                (wallet.unsettledBalance.winnings || 0) +
-                stock.totalInvestment * bid_multiplier;
+                Number(wallet.unsettledBalance.winnings || 0) +
+                Number(stock.totalInvestment * bid_multiplier);
 
               await Transaction.create(transaction_data);
               await wallet.save();

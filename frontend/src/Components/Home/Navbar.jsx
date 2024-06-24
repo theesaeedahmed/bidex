@@ -1,10 +1,12 @@
 import { Box, Divider } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import Nav from "../Miscellaneous/Nav";
 
 const Navbar = ({ setRenderedComponent }) => {
-  const handleNavClicked = (e) => {
-    setRenderedComponent(e.target.value);
+  const [activeNav, setActiveNav] = useState(0);
+  const handleNavClicked = (value) => {
+    setActiveNav(value);
+    setRenderedComponent(value);
   };
 
   return (
@@ -12,22 +14,22 @@ const Navbar = ({ setRenderedComponent }) => {
       display={"flex"}
       width={"100%"}
       justifyContent={"space-between"}
-      bgColor={"inherit"}
+      bgColor={"lightblue"}
       boxShadow={"2px 2px 1px 1px black"}
     >
-      <Nav value={0} handleClick={handleNavClicked}>
+      <Nav value={0} handleClick={handleNavClicked} isActive={activeNav === 0}>
         In Play
       </Nav>
       <Divider orientation={"vertical"} />
-      <Nav value={1} handleClick={handleNavClicked}>
+      <Nav value={1} handleClick={handleNavClicked} isActive={activeNav === 1}>
         My Stocks
       </Nav>
       <Divider orientation={"vertical"} />
-      <Nav value={2} handleClick={handleNavClicked}>
+      <Nav value={2} handleClick={handleNavClicked} isActive={activeNav === 2}>
         Upcoming
       </Nav>
       <Divider orientation={"vertical"} />
-      <Nav value={3} handleClick={handleNavClicked}>
+      <Nav value={3} handleClick={handleNavClicked} isActive={activeNav === 3}>
         Contact Us
       </Nav>
     </Box>

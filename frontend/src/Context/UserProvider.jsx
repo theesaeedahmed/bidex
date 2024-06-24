@@ -13,10 +13,14 @@ const UserProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [liveMatches, setLiveMatches] = useState(null);
   const [myStocks, setMyStocks] = useState(null);
+  const [upcomingMatches, setUpcomingMatches] = useState(null);
+
   const toast = useToast();
 
   const {
     wallet,
+    depositMoney,
+    withdrawMoney,
     loading: walletLoading,
     reload: reloadWallet,
     error: walletError,
@@ -58,7 +62,17 @@ const UserProvider = ({ children }) => {
   }, [error]);
 
   return (
-    <UserContext.Provider value={{ wallet, reloadWallet }}>
+    <UserContext.Provider
+      value={{
+        wallet,
+        reloadWallet,
+        depositMoney,
+        withdrawMoney,
+        liveMatches,
+        myStocks,
+        upcomingMatches,
+      }}
+    >
       {!loading ? children : <Loading />}
     </UserContext.Provider>
   );
