@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import baseUrl from "../url";
 
-const useUser = (accessToken, storeRefreshToken) => {
+const useUser = (accessToken, storeRefreshToken, revokeRefreshToken) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,6 +54,28 @@ const useUser = (accessToken, storeRefreshToken) => {
     }
   };
 
+  const logoutUser = async () => {
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await axios.post(
+        `${baseUrl}/auth/user/logout`,
+        {},
+        config
+      );
+
+      setUser(null);
+      revokeRefreshToken();
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const preventUserFetch = () => {
     preventExecution.current = true;
   };
@@ -78,7 +100,7 @@ const useUser = (accessToken, storeRefreshToken) => {
       return;
     }
 
-    const getUserData = async () => {
+    const getUserProfile = async () => {
       try {
         const config = {
           headers: {
@@ -107,7 +129,7 @@ const useUser = (accessToken, storeRefreshToken) => {
       }
     };
 
-    getUserData();
+    getUserProfile();
   }, [accessToken, reloadFlag]);
 
   return {
@@ -118,6 +140,7 @@ const useUser = (accessToken, storeRefreshToken) => {
     reload,
     registerUser,
     loginUser,
+    logoutUser,
   };
 };
 

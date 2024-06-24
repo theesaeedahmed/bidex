@@ -9,16 +9,6 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { AuthState } from "./Context/AuthProvider";
 
 const App = () => {
-  const { user } = AuthState();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    if (user && (location.pathname === "/" || location.pathname === "/auth")) {
-      navigate("/home");
-    }
-  }, [user]);
-
   return (
     <Box
       margin={0}

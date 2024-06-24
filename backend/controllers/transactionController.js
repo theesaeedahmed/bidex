@@ -65,10 +65,10 @@ const deposit = asyncErrorHandler(async (req, res, next) => {
     const updated_wallet = await user_wallet.save();
 
     res.json({
+      success: true,
       message:
         "Deposit Request made successfully. Admin will review this request shortly.",
       transaction,
-      wallet: updated_wallet,
     });
   } catch (error) {
     next(error);
@@ -115,10 +115,10 @@ const withdraw = asyncErrorHandler(async (req, res, next) => {
     const updated_wallet = await user_wallet.save();
 
     res.json({
+      success: true,
       message:
         "Withdrawal Request made successfully. Admin would review this request shortly.",
       transaction,
-      wallet: updated_wallet,
     });
   } catch (error) {
     next(error);
@@ -235,7 +235,6 @@ const buyStock = asyncErrorHandler(async (req, res, next) => {
       message: "Stocks bought successfully.",
       transaction,
       stock,
-      wallet: updated_wallet,
     });
   } catch (error) {
     next(error);

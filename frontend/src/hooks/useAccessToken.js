@@ -54,6 +54,7 @@ const useAccessToken = (refreshToken) => {
     const checkAndRefreshAccessToken = async () => {
       try {
         const currentTime = Date.now();
+        console.log("check and refresh access token");
 
         if (expirationTime.current - currentTime <= 310000) {
           const currentAccessToken = await getAccessToken();

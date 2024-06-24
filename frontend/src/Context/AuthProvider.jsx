@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { useContext } from "react";
 import useUser from "../hooks/useUser";
 import useAccessToken from "../hooks/useAccessToken";
@@ -12,6 +12,7 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const initialRender = useRef(true);
   const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,11 +37,12 @@ const AuthProvider = ({ children }) => {
     user,
     registerUser,
     loginUser,
+    logoutUser,
     reload: reloadUser,
     error: userError,
     setError: setUserError,
     loading: userLoading,
-  } = useUser(accessToken, storeRefreshToken);
+  } = useUser(accessToken, storeRefreshToken, revokeRefreshToken);
 
   const resetErrors = () => {
     setAccessTokenError(null);
@@ -69,7 +71,7 @@ const AuthProvider = ({ children }) => {
     }
 
     if (refreshToken) {
-      revokeRefreshToken(); // will log out user
+      revokeRefreshToken(); // will logout user
       toast({
         description: `${error}.`,
         status: "error",
@@ -81,7 +83,6 @@ const AuthProvider = ({ children }) => {
         return;
       }
 
-      console.log(`Unauthorized. Need to login before accessing this page.`);
       toast({
         description: `Unauthorized. Need to login before accessing this page.`,
         status: "error",
@@ -89,14 +90,42 @@ const AuthProvider = ({ children }) => {
         isClosable: true,
       });
     }
-    console.log("navigating to auth signin");
+
     navigate("/auth");
     setLoading(false);
   }, [error]);
 
+  useEffect(() => {
+    if (user && (location.pathname === "/" || location.pathname === "/auth")) {
+      navigate("/home");
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    }
+
+    if (
+      !refreshToken &&
+      location.pathname !== "/" &&
+      location.pathname !== "/auth"
+    ) {
+      navigate("/auth");
+    }
+  }, [user, navigate]);
+
   return (
     <AuthContext.Provider
-      value={{ accessToken, user, reloadUser, registerUser, loginUser }}
+      value={{
+        accessToken,
+        user,
+        reloadUser,
+        registerUser,
+        loginUser,
+        logoutUser,
+      }}
     >
       {!loading ? children : <Loading />}
     </AuthContext.Provider>
