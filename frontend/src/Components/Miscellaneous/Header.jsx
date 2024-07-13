@@ -1,10 +1,15 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Box, Heading, IconButton, Text } from "@chakra-ui/react";
+import { ArrowBackIcon, HamburgerIcon } from "@chakra-ui/icons";
 import React from "react";
 import UserAvatar from "./UserAvatar";
 import WalletStatus from "./WalletStatus";
 import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+const Header = ({
+  isAdminPage = false,
+  onSideBarIconClicked = () => {},
+  sideBarOpen = false,
+}) => {
   const navigate = useNavigate();
   return (
     <Box minHeight={"50px"} margin={3} position={"sticky"} zIndex={"sticky"}>
@@ -13,6 +18,13 @@ const Header = () => {
         alignItems={"center"}
         justifyContent={"space-between"}
       >
+        {isAdminPage && (
+          <IconButton
+            aria-label="Search database"
+            icon={sideBarOpen ? <ArrowBackIcon /> : <HamburgerIcon />}
+            onClick={onSideBarIconClicked}
+          />
+        )}
         <Heading
           size={"xl"}
           color={"#453434"}
@@ -21,11 +33,13 @@ const Header = () => {
         >
           BIDEX
         </Heading>
-        <UserAvatar />
+        <UserAvatar showTransactionsOption={!isAdminPage} />
       </Box>
-      <Box justifyContent={"center"} display={"flex"} marginTop={2}>
-        <WalletStatus />
-      </Box>
+      {!isAdminPage && (
+        <Box justifyContent={"center"} display={"flex"} marginTop={2}>
+          <WalletStatus />
+        </Box>
+      )}
     </Box>
   );
 };

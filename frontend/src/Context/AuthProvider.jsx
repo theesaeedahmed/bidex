@@ -79,7 +79,11 @@ const AuthProvider = ({ children }) => {
         isClosable: true,
       });
     } else {
-      if (location.pathname === "/" || location.pathname === "/auth") {
+      if (
+        location.pathname === "/" ||
+        location.pathname === "/auth" ||
+        location.pathname === "/auth/admin"
+      ) {
         return;
       }
 
@@ -98,6 +102,10 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (user && (location.pathname === "/" || location.pathname === "/auth")) {
       navigate("/home");
+      console.log("here");
+    } else if (user && location.pathname === "/auth/admin") {
+      console.log("here");
+      navigate("/admin");
     }
   }, [user, navigate]);
 

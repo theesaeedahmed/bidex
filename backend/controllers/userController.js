@@ -105,7 +105,11 @@ const login = asyncErrorHandler(async (req, res, next) => {
       );
     }
 
-    const user_profile = { username: user.username, email: user.email };
+    const user_profile = {
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    };
 
     res.status(200).json({
       accessToken: access_token,
@@ -177,7 +181,13 @@ const userProfile = asyncErrorHandler(async (req, res, next) => {
 
     res
       .status(200)
-      .json({ user: { username: user.username, email: user.email } });
+      .json({
+        user: {
+          username: user.username,
+          email: user.email,
+          isAdmin: user.isAdmin,
+        },
+      });
   } catch (error) {
     next(error);
   }

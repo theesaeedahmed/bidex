@@ -30,16 +30,22 @@ const useUser = (accessToken, storeRefreshToken, revokeRefreshToken) => {
     }
   };
 
-  const loginUser = async ({ email, password, username }) => {
+  const loginUser = async ({ email, password, username }, isAdmin = false) => {
     try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      if (isAdmin) {
+        config.headers["verify-admin"] = "true";
+      }
+
       const response = await axios.post(
         `${baseUrl}/api/user/login`,
         { email, username, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        config
       );
 
       const refreshToken = response.data.refreshToken;
